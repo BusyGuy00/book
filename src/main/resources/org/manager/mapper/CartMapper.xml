@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "=//mybatis.org// DTD mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.manager.mapper.CartMapper">
+<!-- 카트 상품 추가 -->
+	<insert id="addCart">
+	
+		insert into cart_tbl(cartid, userid, bookid, count)
+		values(seq_cart_id.nextval, #{userid}, #{bookid}, #{count}) 
+	
+	</insert>
+	
+	
+	<!-- 카트 상품 삭제 -->
+	<delete id="deleteCart">
+	
+		delete from cart_tbl where cartid = #{cartid}
+	
+	</delete>
+	
+	<!-- 카트 수량 수정 -->
+	<update id="modifyCount">
+	
+		update cart_tbl set count=#{count} where cartid = #{cartid}
+	
+	</update>
+	
+	
+	<!-- 카트 목록 -->
+	<select id="getCart" resultType="org.manager.domain.CartDTO">
+	
+		select a.cartid, a.userid, a.bookid, a.count, b.pname, b.price, b.filename, b.fullname
+		from cart_tbl a left outer join product_tbl b on a.bookid = b.bookid
+		where userid = #{userid}	
+	
+	</select>
+	
+	<!-- 카트 확인 -->
+	<select id="checkCart" resultType="org.manager.domain.CartDTO">
+	
+		select * from cart_tbl 
+		where userid = #{userid} and bookid = #{bookid}
+	
+	</select>
+	<!-- 특정 상품 조회 쿼리 -->
+<delete id="deleteAllCartItems" parameterType="String">
+    DELETE FROM cart_tbl WHERE userid = #{userid}
+</delete>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "=//mybatis.org// DTD mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.manager.mapper.ReviewMapper">
+
+<select id="getReviewList" resultType="org.manager.domain.ReviewDTO">
+	select * from review where bookid = #{bookid}
+</select>
+
+<insert id="reviewInsert">
+	insert into review (rno, userid, content, score, bookid)
+	values (review_seq.nextval, #{userid}, #{content}, #{score}, #{bookid})
+</insert>
+<delete id="reviewDelete">
+	Delete from review where rno = #{rno}
+</delete>
+
+
+</mapper>

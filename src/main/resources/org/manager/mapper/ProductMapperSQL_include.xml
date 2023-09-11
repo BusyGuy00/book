@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "=//mybatis.org// DTD mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.manager.mapper.ProductMapper">
+<sql id="criteria">
+	<trim prefix="where (" suffix=")" prefixOverrides="OR"> 
+   		 	<if test="typeArr != null">
+			<foreach collection="typeArr" item="type">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							title like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'C'.toString()">
+							content like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'W'.toString()">
+							writer like '%'||#{keyword}||'%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+			</if>
+			</trim>
+	</sql> 
+	<insert id="insert">
+		insert into product_tbl (bookid, price, writer, pname, category, filename, fullname, uploadpath )
+		values (product_seq.nextval, #{price}, #{writer}, #{pname}, #{category}, #{filename}, #{fullname}, #{uploadpath} )
+	</insert>
+	<!-- 리턴 타입이 있다면 resultType에 리턴 타입을 넣어 주면 된다.-->
+	<select id="read" resultType="org.manager.domain.ProductDTO">
+		select * from product_tbl where bookid = #{bookid}
+	</select>
+	<delete id="delete">
+		Delete from table product_tbl where bookid = #{bookid}
+	</delete>
+	<update id="update">
+		update table product_tbl set
+		price = #{price}
+		pname = #{pname}
+		category = #{category}
+		filename = #{filename}
+		fullname = #{fullname}
+		writer =  #{writer}
+		where bookid = #{bookid}
+	</update>
+	<!-- 1페이지는 1~10 2페이지는 11~20 3페이지는 21~30 -->
+	<select id="getListWithPaging" resultType="org.green.domain.ProductDTO">
+		select * from
+		( select Tb.*, rownum rNum from
+   		 	( select * from product_tbl
+   		 	 <include refid="criteria"></include>
+   		 	
+   		 	order by bookid desc) Tb
+   		 ) where rNum between (#{pageNum}-1)*#{amount}+1 and #{pageNum} * #{amount}
+	</select>
+	<select id="getTotalCount" resultType="int">
+		select count(*) from product_tbl
+		<include refid="criteria"></include>
+		 
+	</select>
+</mapper>
